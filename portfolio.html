@@ -2,28 +2,16 @@
 <html>
 <head>
     <link rel="stylesheet" href="head.css">
-    <style>
-        #clickable-image {
-            cursor: pointer;
-        }
-    </style>
 </head>
 <body>
-    <canvas id="wavesCanvas"></canvas>
-    <!-- <link rel="stylesheet" href="ship.css"> -->
-    <!-- <img id="Ship" src="Images/Ship.png"
-    alt="Start"
-    width="250" height="250"> -->
+    <!-- <div id="elementToStyle">This is the element to style</div> -->
+    <canvas id="wavesCanvas"> </canvas>
+    <canvas id="shipCanvas" width="200" height="200" onclick="ChangeDirection()"></canvas>
+    <!-- <img id="shipImg" src="Images/Ship.png" alt="Start"
+    width="200" height="200"
+    onclick="ChangeDirection()"> -->
 
-    <script
-        src="waves.js">
-        // var image = document.getElementById('clickable-image');
-
-        // image.addEventListener('click', function() {
-        //     // Change waves go to next page.
-            
-        // });
-    </script>
+    <script src="waves.js"></script>
     
 </body>
 </html>

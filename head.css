@@ -1,3 +1,35 @@
+:root {
+  --ship_rot_scaled: 1.1;
+  --ship_scaled: 1.1;
+  --ship_cur_type: pointer;
+}
+
 body {
   background-color: rgb(10, 85, 150);
+}
+
+#shipCanvas {
+  position: absolute; /* Position the image absolutely */
+  top: 350px;
+  left: 600px;
+  cursor: var(--ship_cur_type);
+  /* -webkit-transform: scaleX(-1);
+  transform: scaleX(-1); */
+}
+
+#shipImg {
+  position: absolute
+}
+
+/* img:hover {
+  -webkit-transform: scale(var(--ship_rot_scaled), var(--ship_scaled));
+  transform: scale(var(--ship_rot_scaled), var(--ship_scaled));
+} */
+
+.rotate-ship {
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+  --ship_rot_scaled: -1;
+  --ship_scaled: 1;
+  --ship_cur_type: auto;
 }
