@@ -14,25 +14,28 @@ ship.addEventListener('click', () => {
 
 // Wave properties
 h = 60;
-amplitude = 25;
+amplitude = 40;
 
 const frequency = [];
 const w_rand = [];
 const phase_current = [];
 const phase_speed = [];
-for (let i = 0; i < 50; i += 1) {
+for (let i = 0; i < 20; i += 1) {
     w_rand[i]= Math.random() * 6;
-    frequency[i] = Math.random() * 0.015 + 0.025;
+    frequency[i] = Math.random() * 0.01 + 0.01;
     phase_current[i] = 0;  // Initial phase
     if (i % 2 == 0)
+    // if (((i+1) % 4) != 0)
         phase_speed[i] = Math.random() * 0.01 + 0.01;
     else
         phase_speed[i] = Math.random() * -0.01 - 0.01;
 }
-direction = 1, dirc_change = 0;
+let direction = 1, dirc_change = 0, clicked = 0;
+let ship_x = 650, ship_x_end = 1000;
 
 function ChangeDirection(){
-    direction = -1, dirc_change = 1;
+    if (!clicked)
+        direction = -1, dirc_change = 1, clicked = 1;
 }
 
 img.onload = function draw() {
@@ -44,36 +47,47 @@ img.onload = function draw() {
     if (dirc_change) {
         ship_ctx.clearRect(0, 0, ship.width, ship.height);
         dirc_change = 0;
-        for (let i = 0; i < 50; i += 1) {
-            phase_speed[i] += 0.06;
+        for (let i = 0; i < 20; i += 1) {
+            phase_speed[i] += 0.05;
+        }
+    }
+
+    if (direction == -1 && ship_x < ship_x_end) {  //Ship sails forward
+        ship_x += 1;
+        if (ship_x >= ship_x_end) {
+            for (let i = 0; i < 20; i += 1) {
+                phase_speed[i] -= 0.05;
+            }
         }
     }
 
     ship_ctx.scale(direction, 1);
     ship_ctx.drawImage(img, 0, 0, ship.width * direction, ship.height);
 
-    for (let h_pos = 1; h_pos*110 < canvas.height * 2; h_pos += 1) {
+    for (let h_pos = 1; h_pos*300 < canvas.height * 2; h_pos += 1) {
 
         ctx.beginPath();
         for (let x = 0; x < canvas.width; x += 1)
         {
-            const y = (h + h_pos*110) / 2 + amplitude * Math.sin(frequency[h_pos] * x + phase_current[h_pos] + w_rand[h_pos]);
+            const y = (h + h_pos*300) / 2 + amplitude * Math.sin(frequency[h_pos] * x + phase_current[h_pos] + w_rand[h_pos]);
             ctx.lineTo(x, y);
-            if (h_pos == 6) {  //The wave that the ship sails on
-                ship.style.top = ((h + h_pos*110) / 2 + amplitude * Math.sin(frequency[h_pos] * 650 + phase_current[h_pos] + w_rand[h_pos])) + 'px';
-                rotation = ((h + h_pos*110) / 2 + amplitude * Math.cos(frequency[h_pos] * 650 + phase_current[h_pos] + w_rand[h_pos]));
-                ship.style.transform = 'rotate(' + rotation + 'deg)';
+            if (h_pos == 2) {  //The wave that the ship sails on
+                ship.style.top = ((h + h_pos*300) / 2 + amplitude * Math.sin(frequency[h_pos] * ship_x + phase_current[h_pos] + w_rand[h_pos]) - (ship.height-20)) + 'px';
+                ship.style.left = (ship_x - 80) + 'px';
+                rotation = 0.25 * Math.sin(2 * (frequency[h_pos] * ship_x + phase_current[h_pos] + w_rand[h_pos])) *
+                (direction == -1 && ship_x < ship_x_end ? 0.5 : 1);  //Slow down oscillation, when ship is sped up 
+                ship.style.transform = 'rotate(' + rotation + 'rad)';
             }
         }
         ctx.strokeStyle = "blue"; // Wave color
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 10;
         ctx.stroke();
     }
-    for (i = 0; i < 50; i += 1) {  // Update the phase to make the waves move horizontally
+    for (i = 0; i < 20; i += 1) {  // Update the phase to make the waves move horizontally
         phase_current[i] += phase_speed[i];
     }
 
     requestAnimationFrame(draw);  // Request the next frame
 }
 
-draw();  // Start the animation
+// draw();  // Start the animation
