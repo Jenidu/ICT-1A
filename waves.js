@@ -5,17 +5,32 @@ const ship = document.getElementById("shipCanvas");
 const ship_ctx = ship.getContext("2d");
 
 const img = new Image();
-img.src = "Images/Ship.png";
+
+fetch('config.json') //Fetch the JSON file
+  .then(response => response.json())
+  .then(config => {
+    img.src = config.ship.imgSrc;
+    ship_size = config.ship.shipSize;
+    ship_pos = config.ship.shipStart
+    ship_stops = config.ship.anchorings;
+
+    start = config.wave.startH;
+    h = config.wave.H;
+    amplitude = config.wave.amplitude;
+    wave_acc = config.wave.speedUp;
+    line_width = config.wave.lineWidth;
+  })
+  .catch(error => console.error('Error loading settings:', error));
 
 ship.addEventListener('mouseover', () => {
     if (!travel) {
-        ship.width = 220, ship.height = 220;
+        ship.width = ship_size * 1.1, ship.height = ship_size * 1.1;
         ship.style.cursor = "pointer";
     }
 });
 
 ship.addEventListener('mouseout', () => {
-    ship.width = 200, ship.height = 200;
+    ship.width = ship_size, ship.height = ship_size;
 });
 
 window.addEventListener('resize', UpdateCanSize);
@@ -26,8 +41,6 @@ function UpdateCanSize(){
 }
 
 // Wave properties
-h = 60;
-amplitude = 40;
 UpdateCanSize();
 
 const frequency = [];
@@ -43,7 +56,6 @@ for (let i = 0; i < 20; i++) {
     else
         phase_speed[i] = Math.random() * -0.01 - 0.01;
 }
-let ship_pos = 0.2, ship_end_pos = [0.3, 0.5, 0.7];
 let direction = 1, speed_change = 0, travel = 0, page = -1;
 
 function NextPage(){
@@ -68,7 +80,7 @@ function NextPage(){
                 break;            
         }
         speed_change = 1;
-        ship.width = 200, ship.height = 200;
+        ship.width = ship_size, ship.height = ship_size;
         ship.style.cursor = "auto";
     }
 }
@@ -78,15 +90,15 @@ img.onload = function draw()
     ctx.clearRect(0, 0, canvas.width, canvas.height);  // Clear the canvas
     if (speed_change) {
         for (let i = 0; i < 20; i++)  /* Change wave speed */
-            phase_speed[i] += 0.05 * travel;
+            phase_speed[i] += wave_acc * travel;
         speed_change = 0;
     }
     if (travel) {  //Ship sails forward or backwards
         ship_pos = (canvas.width * ship_pos + travel) / canvas.width;  /* Move 'ship_pos' 1 pixel forward */
-        if (travel == 1 ? canvas.width * ship_pos >= canvas.width * ship_end_pos[page] :
-        canvas.width * ship_pos < canvas.width * ship_end_pos[page]) {
+        if (travel == 1 ? canvas.width * ship_pos >= canvas.width * ship_stops[page] :
+        canvas.width * ship_pos < canvas.width * ship_stops[page]) {
             for (let i = 0; i < 20; i++)  /* Wave speed back to normal */
-                phase_speed[i] -= 0.05 * travel;
+                phase_speed[i] -= wave_acc * travel;
             travel = 0;
         }
     }
@@ -99,25 +111,25 @@ img.onload = function draw()
 
 function createLine(){
 
-    for (let h_pos = 1; h_pos*300 < canvas.height * 2; h_pos++) {
+    for (let h_pos = 1; h * h_pos < canvas.height * 2; h_pos++) {
 
         ctx.beginPath();
-        for (let x = 0; x < canvas.width; x += 1)
+        for (let x = 0; x < canvas.width; x++)
         {
-            const y = (h + h_pos*300) / 2 + amplitude * Math.sin(frequency[h_pos] * x + phase_current[h_pos] + w_rand[h_pos]);
+            const y = (start + h*h_pos) / 2 + amplitude * Math.sin(frequency[h_pos] * x + phase_current[h_pos] + w_rand[h_pos]);
             ctx.lineTo(x, y);
             if (h_pos == 2) {  //The wave that the ship sails on
-                ship.style.top = ((h + h_pos*300) / 2 + amplitude * Math.sin(frequency[h_pos] * (canvas.width*ship_pos) + phase_current[h_pos] + w_rand[h_pos]) - 180) + 'px';
+                ship.style.top = ((start + h*h_pos) / 2 + amplitude * Math.sin(frequency[h_pos] * (canvas.width*ship_pos) + phase_current[h_pos] + w_rand[h_pos]) - 180) + 'px';
                 ship.style.left = (canvas.width * ship_pos - 80) + 'px';
                 rotation = 0.25 * Math.sin(2 * (frequency[h_pos] * (canvas.width*ship_pos) + phase_current[h_pos] + w_rand[h_pos])) * (travel ? 0.5 : 1);  //Slow down oscillation, when ship is sped up 
                 ship.style.transform = 'rotate(' + rotation + 'rad)';
             }
         }
         ctx.strokeStyle = "blue"; // Wave color
-        ctx.lineWidth = 10;
+        ctx.lineWidth = line_width;
         ctx.stroke();
     }
-    for (i = 0; i < 20; i += 1)  // Update the phase to make the waves move horizontally
+    for (i = 0; i < 20; i++)  // Update the phase to make the waves move horizontally
         phase_current[i] += phase_speed[i];
 }
 
@@ -132,7 +144,3 @@ function AddWeights(){
 function ExplainStrings(){
     // console.log("strings");
 }
-
-
-
-

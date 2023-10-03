@@ -1,0 +1,16 @@
+{
+    "ship": {
+        "imgSrc": "Images/Ship.png",
+        "shipSize": 200,
+        "shipStart": 0.2,
+        "anchorings": [0.3, 0.5, 0.7]
+    },
+
+    "wave":{
+        "startH": 50,
+        "H": 300,
+        "amplitude": 40,
+        "speedUp": 0.05,
+        "lineWidth": 10
+    }
+}
