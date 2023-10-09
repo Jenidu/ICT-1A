@@ -20,7 +20,7 @@ fetch('config.json') //Fetch the JSON file
     wave_acc = config.wave.speedUp;
     line_width = config.wave.lineWidth;
   })
-  .catch(error => console.error('Error loading settings:', error));
+  .catch(error => console.error('Error loading config:', error));
 
 ship.addEventListener('mouseover', () => {
     if (!travel) {
@@ -63,19 +63,15 @@ function NextPage(){
     if (!travel) {
         switch (page) {
             case (-1):
-                ExplainObjects();
                 travel = 1, direction = -1, page++;  //forwards
                 break;
             case (0):
-                AddWeights();
                 travel = 1, direction = -1, page++;  //forwards
                 break;
             case (1):
-                ExplainStrings();
                 travel = 1, direction = -1, page++;  //forwards
                 break;
             case (2):
-                ExplainObjects();
                 travel = -1, direction = 1, page = 0;  //backswards
                 break;            
         }
@@ -104,12 +100,13 @@ img.onload = function draw()
     }
     ship_ctx.scale(direction, 1);
     ship_ctx.drawImage(img, 0, 0, ship.width * direction, ship.height);
-    createLine();
+    createWaves();
+    PageInfo();
 
     requestAnimationFrame(draw);  // Request the next frame
 }
 
-function createLine(){
+function createWaves(){
 
     for (let h_pos = 1; h * h_pos < canvas.height * 2; h_pos++) {
 
@@ -133,12 +130,59 @@ function createLine(){
         phase_current[i] += phase_speed[i];
 }
 
+function PageInfo(){
+
+    ExplainObjects();
+    // if (!travel) {
+    //     switch (page) {  /* Which rendering accurs at which page */
+    //         case (0):
+    //             ExplainObjects();
+    //             break;
+    //         case (1):
+    //             AddWeights();
+    //             break;
+    //         case (2):
+    //             ExplainStrings();
+    //             break;
+    //     }
+    // }
+}
+
 function ExplainObjects(){
-    // console.log("objects");
+
+    ctx.beginPath();
+    ctx.moveTo(150, 500); /* R0 */
+    ctx.lineTo(150, 600);
+
+    ctx.moveTo(150, 500);  /* R1 */
+    ctx.quadraticCurveTo(240, 525, 150, 550);  // Draw a quadratic Bézier curve
+
+    ctx.moveTo(150, 550); /* R2 */
+    ctx.lineTo(190, 600);
+
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = '#000';
+
+    ctx.stroke();
+    // ctx.beginPath();
+    // ctx.moveTo(250, 500); // Start point
+    // ctx.lineTo(450, 500); // End point
+    // ctx.lineWidth = 10;
+    // ctx.strokeStyle = '#000';
+    // ctx.stroke();
+
+    // // Draw the arrowhead
+    // ctx.beginPath();
+    // ctx.moveTo(460, 500); // Tip of the arrowhead
+    // ctx.lineTo(440, 520); // Left point
+    // ctx.lineTo(440, 480); // Right point
+    // ctx.closePath();
+    // ctx.fillStyle = '#000';
+    // ctx.fill();
 }
 
 function AddWeights(){
-    // console.log("weights");
+
 }
 
 function ExplainStrings(){
