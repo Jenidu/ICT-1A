@@ -19,6 +19,9 @@ fetch('config.json') //Fetch the JSON file
     amplitude = config.wave.amplitude;
     wave_acc = config.wave.speedUp;
     line_width = config.wave.lineWidth;
+
+    R_scale = config.R_scale;
+    R_animation = config.R_animation;
   })
   .catch(error => console.error('Error loading config:', error));
 
@@ -57,13 +60,14 @@ for (let i = 0; i < 20; i++) {
         phase_speed[i] = Math.random() * -0.01 - 0.01;
 }
 let direction = 1, speed_change = 0, travel = 0, page = -1;
+let R_travel = 0;
 
 function NextPage(){
 
     if (!travel) {
         switch (page) {
             case (-1):
-                travel = 1, direction = -1, page++;  //forwards
+                R_travel = 0, travel = 1, direction = -1, page++;  //forwards
                 break;
             case (0):
                 travel = 1, direction = -1, page++;  //forwards
@@ -132,8 +136,8 @@ function createWaves(){
 
 function PageInfo(){
 
-    ExplainObjects();
-    // if (!travel) {
+    if (!travel) {
+        ExplainObjects();
     //     switch (page) {  /* Which rendering accurs at which page */
     //         case (0):
     //             ExplainObjects();
@@ -145,22 +149,36 @@ function PageInfo(){
     //             ExplainStrings();
     //             break;
     //     }
-    // }
+    }
 }
 
 function ExplainObjects(){
 
+    x = canvas.width/2 - R_scale/2;
+    y = canvas.height/2 + R_scale/2 + 50;
+
     ctx.beginPath();
-    ctx.moveTo(150, 500); /* R0 */
-    ctx.lineTo(150, 600);
+    ctx.moveTo(x-R_travel, y); /* R0 */
+    ctx.lineTo(x-R_travel, y + R_scale);
 
-    ctx.moveTo(150, 500);  /* R1 */
-    ctx.quadraticCurveTo(240, 525, 150, 550);  // Draw a quadratic Bézier curve
+    ctx.moveTo(x+R_travel, y);  /* R1 */
+    ctx.quadraticCurveTo(x + R_scale*0.9 + R_travel, y + R_scale/4, x + R_travel, y + R_scale/2);  // Draw a quadratic Bézier curve
 
-    ctx.moveTo(150, 550); /* R2 */
-    ctx.lineTo(190, 600);
+    ctx.moveTo(x + R_travel, y + R_scale/2 + R_travel); /* R2 */
+    ctx.lineTo(x + R_scale*0.4 + R_travel, y + R_scale + R_travel);
 
-    ctx.lineWidth = 5;
+    if (R_travel == R_animation) {
+        ctx.font = "50px Arial";  /* Font for the 'title' */
+        ctx.fillText("Each line corresponds to a symbol", x-320, y-100);
+        ctx.stroke();
+
+        ctx.font = "40px Arial";  /* Font for R0, R1, R2 */
+
+        ctx.fillText("'R0'", x - R_travel - 90, y + R_scale/2);
+        ctx.fillText("'R1'", x+R_travel + 40, y);
+        ctx.fillText("'R2'", x + R_travel + 40, y + R_scale/2 + R_travel + 40);
+    }
+    ctx.lineWidth = 10;
     ctx.strokeStyle = '#000';
 
     ctx.stroke();
@@ -179,6 +197,8 @@ function ExplainObjects(){
     // ctx.closePath();
     // ctx.fillStyle = '#000';
     // ctx.fill();
+
+    R_travel += (R_travel < R_animation)
 }
 
 function AddWeights(){
