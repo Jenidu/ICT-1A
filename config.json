@@ -2,8 +2,8 @@
     "ship": {
         "imgSrc": "Images/Ship.png",
         "shipSize": 200,
-        "shipStart": 0.2,
-        "anchorings": [0.3, 0.5, 0.7]
+        "shipStart": 0.15,
+        "anchorings": [0.25, 0.4, 0.55, 0.7]
     },
 
     "wave":{
@@ -13,6 +13,15 @@
         "speedUp": 0.05,
         "lineWidth": 10
     },
-    "R_scale": 200,
-    "R_animation": 50
+
+    "ExplainObjects": {
+        "R_scale": 200,
+        "R_animation": 50
+    },
+
+    "AddWeights": {
+        "W_wait": 30,
+        "W_animation": 40,
+        "W_incr": 0.04
+    }
 }

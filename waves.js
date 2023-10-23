@@ -20,8 +20,12 @@ fetch('config.json') //Fetch the JSON file
     wave_acc = config.wave.speedUp;
     line_width = config.wave.lineWidth;
 
-    R_scale = config.R_scale;
-    R_animation = config.R_animation;
+    R_scale = config.ExplainObjects.R_scale;
+    R_animation = config.ExplainObjects.R_animation;
+
+    W_wait = config.AddWeights.W_wait;
+    W_animation = config.AddWeights.W_animation;
+    W_incr = config.AddWeights.W_incr;
   })
   .catch(error => console.error('Error loading config:', error));
 
@@ -60,23 +64,32 @@ for (let i = 0; i < 20; i++) {
         phase_speed[i] = Math.random() * -0.01 - 0.01;
 }
 let direction = 1, speed_change = 0, travel = 0, page = -1;
-let R_travel = 0;
+let R_travel = 0, W_travel1 = 0, W_travel2 = 0, weight = 0;
 
 function NextPage(){
 
     if (!travel) {
         switch (page) {
             case (-1):
-                R_travel = 0, travel = 1, direction = -1, page++;  //forwards
+                R_travel = 0, travel = 1, direction = -1;  //forwards
+                page++;
                 break;
             case (0):
-                travel = 1, direction = -1, page++;  //forwards
+                travel = 1, direction = -1;  //forwards
+                page++;
                 break;
             case (1):
-                travel = 1, direction = -1, page++;  //forwards
+                W_travel1 = 0, W_travel2 = 0;
+                travel = 1, direction = -1;  //forwards
+                page++;
                 break;
             case (2):
-                travel = -1, direction = 1, page = 0;  //backswards
+                weight += W_incr, travel = 1, direction = -1;  //forwards
+                page++;
+                break;
+            case (3):
+                R_travel = 0, travel = -1, direction = 1;  //backswards
+                page = 0;
                 break;            
         }
         speed_change = 1;
@@ -137,18 +150,21 @@ function createWaves(){
 function PageInfo(){
 
     if (!travel) {
-        ExplainObjects();
-    //     switch (page) {  /* Which rendering accurs at which page */
-    //         case (0):
-    //             ExplainObjects();
-    //             break;
-    //         case (1):
-    //             AddWeights();
-    //             break;
-    //         case (2):
-    //             ExplainStrings();
-    //             break;
-    //     }
+        // AddWeights();
+        switch (page) {  /* Which rendering accurs at which page */
+            case (0):
+                ExplainObjects();
+                break;
+            case(1):
+                // ExplainNeurons();
+                break;
+            case (2):
+                AddWeights();
+                break;
+            case (3):
+                ExplainStrings();
+                break;
+        }
     }
 }
 
@@ -158,8 +174,8 @@ function ExplainObjects(){
     y = canvas.height/2 + R_scale/2 + 50;
 
     ctx.beginPath();
-    ctx.moveTo(x-R_travel, y); /* R0 */
-    ctx.lineTo(x-R_travel, y + R_scale);
+    ctx.moveTo(x - R_travel, y); /* R0 */
+    ctx.lineTo(x - R_travel, y + R_scale);
 
     ctx.moveTo(x+R_travel, y);  /* R1 */
     ctx.quadraticCurveTo(x + R_scale*0.9 + R_travel, y + R_scale/4, x + R_travel, y + R_scale/2);  // Draw a quadratic Bézier curve
@@ -167,42 +183,81 @@ function ExplainObjects(){
     ctx.moveTo(x + R_travel, y + R_scale/2 + R_travel); /* R2 */
     ctx.lineTo(x + R_scale*0.4 + R_travel, y + R_scale + R_travel);
 
-    if (R_travel == R_animation) {
-        ctx.font = "50px Arial";  /* Font for the 'title' */
-        ctx.fillText("Each line corresponds to a symbol", x-320, y-100);
-        ctx.stroke();
-
-        ctx.font = "40px Arial";  /* Font for R0, R1, R2 */
-
-        ctx.fillText("'R0'", x - R_travel - 90, y + R_scale/2);
-        ctx.fillText("'R1'", x+R_travel + 40, y);
-        ctx.fillText("'R2'", x + R_travel + 40, y + R_scale/2 + R_travel + 40);
-    }
     ctx.lineWidth = 10;
     ctx.strokeStyle = '#000';
 
-    ctx.stroke();
-    // ctx.beginPath();
-    // ctx.moveTo(250, 500); // Start point
-    // ctx.lineTo(450, 500); // End point
-    // ctx.lineWidth = 10;
-    // ctx.strokeStyle = '#000';
-    // ctx.stroke();
+    if (R_travel == R_animation) {
+        ctx.font = "50px Arial";  /* Font for the 'title' */
+        ctx.fillText("Each line corresponds to a symbol", x - 320, y - 100);
+        ctx.stroke();
 
-    // // Draw the arrowhead
-    // ctx.beginPath();
-    // ctx.moveTo(460, 500); // Tip of the arrowhead
-    // ctx.lineTo(440, 520); // Left point
-    // ctx.lineTo(440, 480); // Right point
-    // ctx.closePath();
-    // ctx.fillStyle = '#000';
-    // ctx.fill();
+        ctx.font = "40px Arial";  /* Font for R0, R1, R2 */
+        ctx.fillText("'R0'", x - R_travel - 90, y + R_scale/2);
+        ctx.fillText("'R1'", x + R_travel + 40, y);
+        ctx.fillText("'R2'", x + R_travel + 40, y + R_scale/2 + R_travel + 40);
+    }
+    ctx.stroke();
 
     R_travel += (R_travel < R_animation)
 }
 
 function AddWeights(){
 
+    x = canvas.width/2;  //390, 950
+    y = canvas.height/2 + 100;
+
+    if (W_travel2 < W_animation) {
+        ctx.font = "45px Arial";
+        ctx.fillText("Each neuron stores the information of a symbol", x-470, y-120);
+    }
+    else {
+        ctx.font = "40px Arial";
+        ctx.fillText("Neurons are connected together, because", x-350, y-150);
+        ctx.fillText("the symbols were found close together", x-320, y-110);
+    }
+    ctx.strokeStyle = '#000';
+    for (d = 0; d <= 180; d += 180)
+    {
+        ctx.beginPath();
+        ctx.moveTo(x - 125, y + d); // Start point
+        ctx.lineTo(x + 125, y + d); // End point
+        ctx.closePath();
+        ctx.lineWidth = 12;
+        ctx.stroke();
+
+        // Draw the arrowhead
+        ctx.beginPath();
+        ctx.moveTo(x + 155, y + d); // Tip of the arrowhead
+        ctx.lineTo(x + 125, y+30 + d); // Left point
+        ctx.lineTo(x + 125, y-30 + d); // Right point
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(x - 180, y-5 + d, 18, 0, 2 * Math.PI);  //First neuron
+        ctx.arc(x + 200, y-5 + d, 18, 0, 2 * Math.PI);  //Second neuron
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.font = "30px Arial";  /* Font for the weight */
+        ctx.fillText(weight + (W_travel2 == W_animation ? W_incr : 0), x-25, y-20 + d);
+        if (W_travel1 == W_wait && W_travel2 < W_animation)
+        ctx.fillText("+" + W_incr, x - 43, y-20 + (W_travel2 - W_animation) + d);
+    }
+    ctx.font = "30px Arial";  /* Font for the 'neuron' */
+    ctx.fillText("Neuron 1", x - 275, y - 35);
+    ctx.fillText("Neuron 2", x + 160, y - 35);
+    ctx.fillText("Neuron 2", x - 275, y-35 + 180);
+    ctx.fillText("Neuron 3", x + 160, y-35 + 180);
+
+    ctx.font = "20px Arial";  /* Font for the symbol */
+    ctx.fillText("(R0)", x - 250, y - 10);
+    ctx.fillText("(R1)", x + 230, y - 10);
+    ctx.fillText("(R1)", x - 250, y-10 + 180);
+    ctx.fillText("(R2)", x + 230, y-10 + 180);
+
+    W_travel1 += (W_travel1 < W_wait)
+    W_travel2 += (W_travel1 == W_wait && W_travel2 < W_animation)
 }
 
 function ExplainStrings(){
