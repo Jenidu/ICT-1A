@@ -156,7 +156,7 @@ function PageInfo(){
                 ExplainObjects();
                 break;
             case(1):
-                // ExplainNeurons();
+                ExplainNeurons();
                 break;
             case (2):
                 AddWeights();
@@ -201,19 +201,49 @@ function ExplainObjects(){
     R_travel += (R_travel < R_animation)
 }
 
+function ExplainNeurons(){
+
+    x = canvas.width/2;
+    y = canvas.height/2 + 120;
+
+    ctx.font = "45px Arial";
+    ctx.fillText("Each neuron stores the information of a symbol", x-470, y-120);
+
+    ctx.beginPath();
+    ctx.arc(x - 300, y + 80, 18, 0, 2 * Math.PI);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(x, y + 20, 20, 0, 2 * Math.PI);
+    ctx.arc(x + 310, y + 70, 20, 0, 2 * Math.PI);
+    ctx.fill();
+
+    ctx.font = "35px Arial";  /* Font for the 'neuron' */
+    ctx.fillText("Neuron 1", x - 350, y + 50);
+    ctx.fillText("Neuron 2", x - 80, y - 15);
+    ctx.fillText("Neuron 3", x + 260, y + 40);
+
+    ctx.font = "25px Arial";  /* Font for the symbol */
+    ctx.fillText("(R0)", x - 270, y + 80);
+    ctx.fillText("(R1)", x - 70, y + 15);
+    ctx.fillText("(R2)", x + 340, y + 70);
+}
+
 function AddWeights(){
 
-    x = canvas.width/2;  //390, 950
-    y = canvas.height/2 + 100;
+    x = canvas.width/2;
+    y = canvas.height/2 + 120;
 
     if (W_travel2 < W_animation) {
-        ctx.font = "45px Arial";
-        ctx.fillText("Each neuron stores the information of a symbol", x-470, y-120);
+        ctx.font = "40px Arial";
+        ctx.fillText("Neurons are connected together because,", x-350, y-150);
+        ctx.fillText("the symbols were found close together", x-320, y-110);
     }
     else {
         ctx.font = "40px Arial";
-        ctx.fillText("Neurons are connected together, because", x-350, y-150);
-        ctx.fillText("the symbols were found close together", x-320, y-110);
+        ctx.fillText("The connection between the neurons is correct thus,",x-460,y-150);
+        ctx.fillText("the weight gets increased",x-230,y-110);
     }
     ctx.strokeStyle = '#000';
     for (d = 0; d <= 180; d += 180)
@@ -240,7 +270,7 @@ function AddWeights(){
         ctx.fill();
 
         ctx.font = "30px Arial";  /* Font for the weight */
-        ctx.fillText(weight + (W_travel2 == W_animation ? W_incr : 0), x-25, y-20 + d);
+        ctx.fillText(weight + (W_travel2 >= W_animation ? W_incr : 0), x-25, y-20 + d);
         if (W_travel1 == W_wait && W_travel2 < W_animation)
         ctx.fillText("+" + W_incr, x - 43, y-20 + (W_travel2 - W_animation) + d);
     }
@@ -256,8 +286,8 @@ function AddWeights(){
     ctx.fillText("(R1)", x - 250, y-10 + 180);
     ctx.fillText("(R2)", x + 230, y-10 + 180);
 
-    W_travel1 += (W_travel1 < W_wait)
-    W_travel2 += (W_travel1 == W_wait && W_travel2 < W_animation)
+    W_travel1 += (W_travel1 < W_wait);
+    W_travel2 += (W_travel1 == W_wait && W_travel2 < W_animation) * 0.7;
 }
 
 function ExplainStrings(){

@@ -20,8 +20,8 @@
     },
 
     "AddWeights": {
-        "W_wait": 30,
-        "W_animation": 40,
+        "W_wait": 120,
+        "W_animation": 50,
         "W_incr": 0.04
     }
 }
