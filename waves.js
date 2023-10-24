@@ -150,7 +150,6 @@ function createWaves(){
 function PageInfo(){
 
     if (!travel) {
-        // AddWeights();
         switch (page) {  /* Which rendering accurs at which page */
             case (0):
                 ExplainObjects();
@@ -291,5 +290,53 @@ function AddWeights(){
 }
 
 function ExplainStrings(){
-    // console.log("strings");
+
+x = canvas.width/2 + 80;
+y = canvas.height/2;
+
+ctx.font = "40px Arial";  /* Font for the title */
+ctx.fillText("Once the weights are 1.00,", x-340, y);
+ctx.fillText("the connection becomes permanent", x-400, y+40);
+
+ctx.font = "35px Arial";
+ctx.fillText("Neuron 1 to neuron 3 is a string", x-350, y+ 250);
+
+//Once these weights are at 1.00, the neurons are connected into strings.
+ctx.strokeStyle = '#000';
+
+for (d = 0; d <= 300; d += 300)
+{
+    ctx.beginPath();
+    ctx.moveTo(x-350 + d, y + 150); // Start point
+    ctx.lineTo(x-150 + d, y + 150); // End point
+    ctx.closePath();
+    ctx.lineWidth = 12;
+    ctx.stroke();
+
+    // Draw the arrowhead
+    ctx.beginPath();
+    ctx.moveTo(x-125 + d, y + 150); // Tip of the arrowhead
+    ctx.lineTo(x-150 + d, y + 125);
+    ctx.lineTo(x-150 + d, y + 175);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(x - 90 + d, y + 145, 18, 0, 2 * Math.PI);  //Second neuron
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.font = "30px Arial";  /* Font for the weight */
+    ctx.fillText("1.00", x-275 + d, y + 130);
+}
+ctx.beginPath();
+ctx.arc(x - 390, y + 145, 18, 0, 2 * Math.PI);  //First neuron
+ctx.closePath();
+ctx.fill();
+
+ctx.fillText("Neuron 1",x - 450 , y + 115);
+ctx.fillText("Neuron 2",x - 150 , y + 115);
+ctx.fillText("Neuron 3",x + 150 , y + 115);
+
+
 }
